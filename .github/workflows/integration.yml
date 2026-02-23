@@ -1,0 +1,44 @@
+name: Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js + cache
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm i
+
+      # 4️⃣ Run ESLint
+      - name: Run linter
+        run: npm run lint
+
+      # 5️⃣ Run tests
+      - name: Run tests
+        run: npm run test
+
+      # 6️⃣ Build project (optional but recommended)
+      - name: Build project
+        run: npm run build
